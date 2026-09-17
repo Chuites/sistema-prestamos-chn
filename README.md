@@ -37,9 +37,10 @@ Eso es todo.
 
 | Qué         | Dónde                                        |
 |-------------|----------------------------------------------|
-| Aplicación  | http://localhost:4200                        |
-| API         | http://localhost:8080/api                    |
-| SQL Server  | `localhost:1433` (usuario `sa`)              |
+| Aplicación  | http://localhost:4200                            |
+| API         | http://localhost:4200/api (o http://localhost:8080/api) |
+| Swagger UI  | http://localhost:4200/swagger-ui/index.html      |
+| SQL Server  | `localhost:1433` (usuario `sa`)                  |
 
 ## Datos de prueba
 
@@ -53,7 +54,8 @@ En el primer arranque se cargan solos: **12 clientes**, **24 solicitudes**,
 - [Base de datos](docs/base-de-datos.md) — diagrama entidad-relación y script SQL.
 - [Guía de usuario](docs/guia-usuario.md) — uso de la aplicación.
 
-Swagger UI (con el backend corriendo): http://localhost:8080/swagger-ui.html
+Swagger UI (con el sistema corriendo): http://localhost:4200/swagger-ui/index.html
+(también directo al backend en http://localhost:8080/swagger-ui/index.html).
 
 ## Comandos útiles
 
@@ -107,6 +109,9 @@ npm start
 - **Contraseña de SQL Server:** debe tener al menos 8 caracteres, con mayúscula,
   minúscula, número y símbolo, o el contenedor no arranca.
 - **Puertos ocupados:** si `4200`, `8080` o `1433` están en uso, libera el puerto.
+- **`localhost:8080` responde una página vacía:** otro proceso puede estar usando el
+  `8080` en IPv4 (por ejemplo, el agente Check Point SandBlast). Usa
+  `http://localhost:4200/swagger-ui/index.html` o `http://[::1]:8080/...`.
 - **La API tarda la primera vez:** SQL Server debe terminar de iniciar antes de que
   arranque el backend.
 - **Tablas:** se crean y actualizan solas, no hay migraciones que ejecutar.

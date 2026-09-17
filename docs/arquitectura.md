@@ -173,6 +173,11 @@ Aplicación Angular con componentes **standalone** y rutas en `app.routes.ts`:
 No hay migraciones: el esquema lo genera Hibernate. En `docs/sql/esquema.sql` está el
 script equivalente para referencia.
 
+**Swagger UI:** el backend lo expone directo en
+`http://localhost:8080/swagger-ui/index.html`, y nginx lo publica además en
+`http://localhost:4200/swagger-ui/index.html` (útil si el `8080` está ocupado en IPv4
+por otro proceso).
+
 ## Pruebas
 
 - **Backend:** pruebas unitarias con Mockito (no necesitan base de datos):

@@ -33,7 +33,7 @@ Frontend (run from `frontend`):
 
 - Layers: `controller` → `service` → `repository` (Spring Data JPA) → `entity`. DTO records exist only for create/resolve requests (`dto/`).
 - REST bases: `/api/clientes`, `/api/solicitudes`, `/api/prestamos`, `/api/pagos` (see `controller/`).
-- OpenAPI docs via `springdoc-openapi-starter-webmvc-ui` v3 (Boot 4): UI at `/swagger-ui.html`, JSON at `/v3/api-docs`. Project docs live in `docs/`.
+- OpenAPI docs via `springdoc-openapi-starter-webmvc-ui` v3 (Boot 4): UI at `/swagger-ui/index.html`, JSON at `/v3/api-docs`. Reached directly on `:8080` or proxied by the frontend nginx at `http://localhost:4200/swagger-ui/index.html` (and `/v3/api-docs`). Project docs live in `docs/`.
 - Approval flow: create a solicitud (state `EN_PROCESO`), then `PUT /api/solicitudes/{id}/resolver`. Approving requires `tasaInteresAnual` and auto-creates a `Prestamo` with `montoPagado = 0` (estado derives to `PENDIENTE`); rejecting sets `RECHAZADA`. A solicitud can only be resolved once.
 - Payments: `POST /api/pagos/prestamo/{prestamoId}` increments `Prestamo.montoPagado`; `saldoPendiente` and `estado` are derived (`@Transient` getters, not stored). Payment cannot exceed the balance; a duplicate `numeroRecibo` returns 409.
 - Every controller hard-codes `@CrossOrigin(origins = "http://localhost:4200")`; changing the frontend port breaks API calls.

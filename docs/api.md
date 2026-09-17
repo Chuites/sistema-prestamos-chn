@@ -5,8 +5,10 @@
 - **URL base (directa):** `http://localhost:8080/api`
 - **URL base (a través del frontend):** `http://localhost:4200/api`
 - **Formato:** JSON (`Content-Type: application/json`).
-- **Documentación interactiva (Swagger UI):** `http://localhost:8080/swagger-ui.html`
+- **Documentación interactiva (Swagger UI):** `http://localhost:4200/swagger-ui/index.html`
+  (vía nginx; directo al backend: `http://localhost:8080/swagger-ui/index.html`).
 - **Especificación OpenAPI (JSON):** `http://localhost:8080/v3/api-docs`
+  (o `http://localhost:4200/v3/api-docs`).
 
 Recursos disponibles:
 
