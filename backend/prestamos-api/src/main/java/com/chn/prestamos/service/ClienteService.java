@@ -94,10 +94,10 @@ public class ClienteService {
     public void eliminar(Long id) {
         Cliente cliente = buscarPorId(id);
 
-        pagoRepository.deleteByPrestamo_Cliente_Id(id);
+        pagoRepository.deleteByPrestamo_Solicitud_Cliente_Id(id);
         pagoRepository.flush();
 
-        prestamoRepository.deleteByCliente_Id(id);
+        prestamoRepository.deleteBySolicitud_Cliente_Id(id);
         prestamoRepository.flush();
 
         solicitudRepository.deleteByCliente_Id(id);

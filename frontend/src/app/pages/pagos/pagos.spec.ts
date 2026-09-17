@@ -159,4 +159,24 @@ describe('Pagos', () => {
 
     flushCarga();
   });
+
+  it('muestra en la tabla solo los pagos del cliente filtrado', () => {
+    const fixture = TestBed.createComponent(Pagos);
+    fixture.detectChanges();
+    flushCarga();
+    fixture.detectChanges();
+
+    expect(
+      fixture.nativeElement.querySelectorAll('tbody tr').length
+    ).toBe(2);
+
+    fixture.componentInstance.filtroCliente.setValue(1);
+    fixture.detectChanges();
+
+    const filas =
+      fixture.nativeElement.querySelectorAll('tbody tr');
+
+    expect(filas.length).toBe(1);
+    expect(filas[0].textContent).toContain('REC-1');
+  });
 });

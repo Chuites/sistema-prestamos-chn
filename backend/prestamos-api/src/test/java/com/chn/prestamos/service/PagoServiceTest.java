@@ -38,29 +38,17 @@ class PagoServiceTest {
     @InjectMocks
     private PagoService pagoService;
 
-    private Prestamo prestamo(
-        String montoAprobado,
-        String montoPagado,
-        String saldoPendiente,
-        EstadoPrestamo estado
-    ) {
+    private Prestamo prestamo(String montoAprobado, String montoPagado) {
         Prestamo prestamo = new Prestamo();
         prestamo.setId(1L);
         prestamo.setMontoAprobado(new BigDecimal(montoAprobado));
         prestamo.setMontoPagado(new BigDecimal(montoPagado));
-        prestamo.setSaldoPendiente(new BigDecimal(saldoPendiente));
-        prestamo.setEstado(estado);
         return prestamo;
     }
 
     @Test
     void registrarPagoParcialActualizaSaldoYEstado() {
-        Prestamo prestamo = prestamo(
-            "1000.00",
-            "0.00",
-            "1000.00",
-            EstadoPrestamo.PENDIENTE
-        );
+        Prestamo prestamo = prestamo("1000.00", "0.00");
         when(prestamoService.buscarPorId(1L)).thenReturn(prestamo);
         when(pagoRepository.save(any(Pago.class)))
             .thenAnswer((invocacion) -> invocacion.getArgument(0));
@@ -88,12 +76,7 @@ class PagoServiceTest {
 
     @Test
     void registrarPagoTotalMarcaPagado() {
-        Prestamo prestamo = prestamo(
-            "1000.00",
-            "400.00",
-            "600.00",
-            EstadoPrestamo.PARCIAL
-        );
+        Prestamo prestamo = prestamo("1000.00", "400.00");
         when(prestamoService.buscarPorId(1L)).thenReturn(prestamo);
         when(pagoRepository.save(any(Pago.class)))
             .thenAnswer((invocacion) -> invocacion.getArgument(0));
@@ -116,12 +99,7 @@ class PagoServiceTest {
 
     @Test
     void registrarPagoMayorAlSaldoEsInvalido() {
-        Prestamo prestamo = prestamo(
-            "1000.00",
-            "0.00",
-            "1000.00",
-            EstadoPrestamo.PENDIENTE
-        );
+        Prestamo prestamo = prestamo("1000.00", "0.00");
         when(prestamoService.buscarPorId(1L)).thenReturn(prestamo);
 
         ResponseStatusException ex = assertThrows(
@@ -142,12 +120,7 @@ class PagoServiceTest {
 
     @Test
     void registrarPagoSobrePrestamoPagadoEsInvalido() {
-        Prestamo prestamo = prestamo(
-            "1000.00",
-            "1000.00",
-            "0.00",
-            EstadoPrestamo.PAGADO
-        );
+        Prestamo prestamo = prestamo("1000.00", "1000.00");
         when(prestamoService.buscarPorId(1L)).thenReturn(prestamo);
 
         ResponseStatusException ex = assertThrows(
@@ -163,5 +136,29 @@ class PagoServiceTest {
         );
 
         assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
+    }
+
+    @Test
+    void registrarPagoConReciboDuplicadoEsConflicto() {
+        Prestamo prestamo = prestamo("1000.00", "0.00");
+        when(prestamoService.buscarPorId(1L)).thenReturn(prestamo);
+        when(pagoRepository.existsByNumeroRecibo("REC-1"))
+            .thenReturn(true);
+
+        ResponseStatusException ex = assertThrows(
+            ResponseStatusException.class,
+            () -> pagoService.registrar(
+                1L,
+                new RegistrarPagoRequest(
+                    new BigDecimal("100.00"),
+                    "REC-1",
+                    null
+                )
+            )
+        );
+
+        assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
+        verify(pagoRepository, never()).save(any());
+        verify(prestamoRepository, never()).save(any());
     }
 }

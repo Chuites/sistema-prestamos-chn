@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "solicitudes_prestamo")
-public class SolicitudPrestamo {
+public class SolicitudPrestamo extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

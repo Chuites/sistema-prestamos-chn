@@ -13,5 +13,7 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
         Long prestamoId
     );
 
-    void deleteByPrestamo_Cliente_Id(Long clienteId);
+    boolean existsByNumeroRecibo(String numeroRecibo);
+
+    void deleteByPrestamo_Solicitud_Cliente_Id(Long clienteId);
 }

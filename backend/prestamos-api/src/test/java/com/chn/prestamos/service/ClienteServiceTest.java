@@ -99,8 +99,10 @@ class ClienteServiceTest {
             solicitudRepository,
             clienteRepository
         );
-        orden.verify(pagoRepository).deleteByPrestamo_Cliente_Id(7L);
-        orden.verify(prestamoRepository).deleteByCliente_Id(7L);
+        orden.verify(pagoRepository)
+            .deleteByPrestamo_Solicitud_Cliente_Id(7L);
+        orden.verify(prestamoRepository)
+            .deleteBySolicitud_Cliente_Id(7L);
         orden.verify(solicitudRepository).deleteByCliente_Id(7L);
         orden.verify(clienteRepository).delete(cliente);
     }

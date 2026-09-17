@@ -134,14 +134,14 @@
 
     <p
       class="estado-vacio"
-      *ngIf="!cargando && pagos.length === 0"
+      *ngIf="!cargando && pagosFiltrados.length === 0"
     >
       No existen pagos registrados.
     </p>
 
     <div
       class="tabla-contenedor"
-      *ngIf="!cargando && pagos.length > 0"
+      *ngIf="!cargando && pagosFiltrados.length > 0"
     >
       <table>
         <thead>
@@ -156,7 +156,7 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let pago of pagos">
+          <tr *ngFor="let pago of pagosFiltrados">
             <td>
               <strong>{{ pago.numeroRecibo }}</strong>
               <span>{{ pago.observaciones }}</span>

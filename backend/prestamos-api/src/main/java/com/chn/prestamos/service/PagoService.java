@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -69,20 +68,21 @@ public class PagoService {
             );
         }
 
-        BigDecimal nuevoMontoPagado =
-            prestamo.getMontoPagado().add(request.monto());
-
-        BigDecimal nuevoSaldo =
-            prestamo.getSaldoPendiente().subtract(request.monto());
-
-        prestamo.setMontoPagado(nuevoMontoPagado);
-        prestamo.setSaldoPendiente(nuevoSaldo);
-
-        if (nuevoSaldo.compareTo(BigDecimal.ZERO) == 0) {
-            prestamo.setEstado(EstadoPrestamo.PAGADO);
-        } else {
-            prestamo.setEstado(EstadoPrestamo.PARCIAL);
+        if (
+            request.numeroRecibo() != null
+                && pagoRepository.existsByNumeroRecibo(
+                    request.numeroRecibo()
+                )
+        ) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Ya existe un pago con ese número de recibo"
+            );
         }
+
+        prestamo.setMontoPagado(
+            prestamo.getMontoPagado().add(request.monto())
+        );
 
         prestamoRepository.save(prestamo);
 

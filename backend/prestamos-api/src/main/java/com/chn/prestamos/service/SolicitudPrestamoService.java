@@ -3,7 +3,6 @@ package com.chn.prestamos.service;
 import com.chn.prestamos.dto.CrearSolicitudRequest;
 import com.chn.prestamos.dto.ResolverSolicitudRequest;
 import com.chn.prestamos.entity.Cliente;
-import com.chn.prestamos.entity.EstadoPrestamo;
 import com.chn.prestamos.entity.EstadoSolicitud;
 import com.chn.prestamos.entity.Prestamo;
 import com.chn.prestamos.entity.SolicitudPrestamo;
@@ -134,7 +133,6 @@ public class SolicitudPrestamoService {
         if (request.estado() == EstadoSolicitud.APROBADA) {
             Prestamo prestamo = new Prestamo();
             prestamo.setSolicitud(solicitudGuardada);
-            prestamo.setCliente(solicitudGuardada.getCliente());
             prestamo.setMontoAprobado(
                 solicitudGuardada.getMontoSolicitado()
             );
@@ -145,10 +143,6 @@ public class SolicitudPrestamoService {
                 solicitudGuardada.getPlazoMeses()
             );
             prestamo.setMontoPagado(BigDecimal.ZERO);
-            prestamo.setSaldoPendiente(
-                solicitudGuardada.getMontoSolicitado()
-            );
-            prestamo.setEstado(EstadoPrestamo.PENDIENTE);
 
             prestamoRepository.save(prestamo);
         }

@@ -1,0 +1,63 @@
+// Sistema de Préstamos — Crédito Nacional
+// Pega este contenido en https://dbdiagram.io/d para generar el diagrama.
+// Corresponde a docs/sql/esquema.sql.
+
+Table clientes {
+  id                    bigint        [pk, increment]
+  nombre                varchar(100)  [not null]
+  apellido              varchar(100)  [not null]
+  numero_identificacion varchar(25)   [not null, unique, note: 'Identificación única']
+  fecha_nacimiento      date          [not null]
+  direccion             varchar(250)  [not null]
+  correo_electronico    varchar(150)  [not null]
+  telefono              varchar(20)   [not null]
+  creado_en             datetime2     [not null]
+  actualizado_en        datetime2     [not null]
+
+  Note: 'Datos personales de los clientes.'
+}
+
+Table solicitudes_prestamo {
+  id                    bigint        [pk, increment]
+  cliente_id            bigint        [not null, ref: > clientes.id]
+  monto_solicitado      numeric(18,2) [not null]
+  plazo_meses           int           [not null]
+  destino_prestamo      varchar(200)  [not null]
+  observaciones         varchar(500)
+  fecha_solicitud       datetime2     [not null]
+  estado                varchar(20)   [not null, note: 'EN_PROCESO | APROBADA | RECHAZADA']
+  fecha_resolucion      datetime2
+  comentario_resolucion varchar(500)
+  creado_en             datetime2     [not null]
+  actualizado_en        datetime2     [not null]
+
+  Note: 'Peticiones de crédito. Solo se resuelven una vez.'
+}
+
+Table prestamos {
+  id                 bigint        [pk, increment]
+  solicitud_id       bigint        [not null, unique, ref: - solicitudes_prestamo.id]
+  monto_aprobado     numeric(18,2) [not null]
+  tasa_interes_anual numeric(5,2)  [not null]
+  plazo_meses        int           [not null]
+  monto_pagado       numeric(18,2) [not null, note: 'Total abonado (agregado de pagos)']
+  fecha_aprobacion   datetime2     [not null]
+  creado_en          datetime2     [not null]
+  actualizado_en     datetime2     [not null]
+
+  Note: 'Créditos aprobados. saldo_pendiente y estado se derivan en la aplicación.'
+}
+
+Table pagos {
+  id             bigint        [pk, increment]
+  prestamo_id    bigint        [not null, ref: > prestamos.id]
+  monto          numeric(18,2) [not null]
+  fecha_pago     datetime2     [not null]
+  metodo_pago    varchar(20)   [not null, note: 'EFECTIVO | TRANSFERENCIA | TARJETA | CHEQUE']
+  numero_recibo  varchar(50)   [unique, note: 'Único cuando no es nulo']
+  observaciones  varchar(250)
+  creado_en      datetime2     [not null]
+  actualizado_en datetime2     [not null]
+
+  Note: 'Abonos registrados a los préstamos.'
+}

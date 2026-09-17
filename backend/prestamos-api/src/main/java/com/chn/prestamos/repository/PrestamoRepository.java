@@ -10,12 +10,13 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, Long> {
 
     List<Prestamo> findAllByOrderByFechaAprobacionDesc();
 
-    List<Prestamo>
-        findByCliente_IdOrderByFechaAprobacionDesc(Long clienteId);
+    List<Prestamo> findBySolicitud_Cliente_IdOrderByFechaAprobacionDesc(
+        Long clienteId
+    );
 
     Optional<Prestamo> findBySolicitud_Id(Long solicitudId);
 
     boolean existsBySolicitud_Id(Long solicitudId);
 
-    void deleteByCliente_Id(Long clienteId);
+    void deleteBySolicitud_Cliente_Id(Long clienteId);
 }

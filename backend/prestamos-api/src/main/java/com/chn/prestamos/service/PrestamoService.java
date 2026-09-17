@@ -44,7 +44,9 @@ public class PrestamoService {
         clienteService.buscarPorId(clienteId);
 
         return prestamoRepository
-            .findByCliente_IdOrderByFechaAprobacionDesc(clienteId);
+            .findBySolicitud_Cliente_IdOrderByFechaAprobacionDesc(
+                clienteId
+            );
     }
 
     @Transactional(readOnly = true)

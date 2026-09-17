@@ -26,7 +26,7 @@ import java.time.LocalDate;
         )
     }
 )
-public class Cliente {
+public class Cliente extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

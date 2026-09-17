@@ -334,6 +334,8 @@ curl -X POST http://localhost:8080/api/pagos/prestamo/1 \
 
 Efectos del pago:
 
-- Se actualizan `montoPagado` y `saldoPendiente` del préstamo.
-- El estado pasa a `PARCIAL` (si queda saldo) o `PAGADO` (si el saldo llega a 0).
-- Errores: `400` si el monto supera el saldo; `409` si el préstamo ya está pagado.
+- Se actualiza `montoPagado` del préstamo. `saldoPendiente`
+  (`montoAprobado - montoPagado`) y `estado` son **derivados**: no se almacenan.
+- El estado resulta `PARCIAL` (si queda saldo) o `PAGADO` (si el saldo llega a 0).
+- Errores: `400` si el monto supera el saldo; `409` si el préstamo ya está pagado o
+  si el `numeroRecibo` ya existe.

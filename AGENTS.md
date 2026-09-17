@@ -35,7 +35,7 @@ Frontend (run from `frontend`):
 - REST bases: `/api/clientes`, `/api/solicitudes`, `/api/prestamos`, `/api/pagos` (see `controller/`).
 - OpenAPI docs via `springdoc-openapi-starter-webmvc-ui` v3 (Boot 4): UI at `/swagger-ui.html`, JSON at `/v3/api-docs`. Project docs live in `docs/`.
 - Approval flow: create a solicitud (state `EN_PROCESO`), then `PUT /api/solicitudes/{id}/resolver`. Approving requires `tasaInteresAnual` and auto-creates a `Prestamo` (`PENDIENTE`); rejecting sets `RECHAZADA`. A solicitud can only be resolved once.
-- Payments: `POST /api/pagos/prestamo/{prestamoId}` updates `montoPagado`/`saldoPendiente` and sets prestamo state to `PARCIAL` or `PAGADO`. Payment cannot exceed the balance.
+- Payments: `POST /api/pagos/prestamo/{prestamoId}` increments `Prestamo.montoPagado`; `saldoPendiente` and `estado` are derived (`@Transient` getters, not stored). Payment cannot exceed the balance; a duplicate `numeroRecibo` returns 409.
 - Every controller hard-codes `@CrossOrigin(origins = "http://localhost:4200")`; changing the frontend port breaks API calls.
 - Frontend calls the API with a **relative** base (`API_BASE_URL = '/api'` in `services/api-base.ts`). In dev, `ng serve` proxies `/api` to `http://localhost:8080` via `proxy.conf.json`; in Docker, nginx proxies `/api` to `backend:8080`. Tests expect request URLs like `/api/clientes`.
 
