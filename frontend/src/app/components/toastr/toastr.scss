@@ -1,0 +1,94 @@
+.toastr-contenedor {
+  position: fixed;
+  z-index: 2000;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+  width: min(380px, calc(100vw - 2.5rem));
+  pointer-events: none;
+}
+
+.toastr-item {
+  position: relative;
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  padding: 1rem 1.05rem 1rem 1.2rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  pointer-events: auto;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  animation: toastr-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+
+  &::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--toast-color, var(--primary));
+    content: '';
+  }
+}
+
+.toastr-contenido {
+  flex: 1;
+
+  strong {
+    display: block;
+    color: var(--toast-color, var(--text));
+    font-size: 0.89rem;
+  }
+
+  p {
+    margin: 0.3rem 0 0;
+    color: var(--text-soft);
+    font-size: 0.81rem;
+    line-height: 1.4;
+  }
+}
+
+.toastr-cerrar {
+  border: 0;
+  cursor: pointer;
+  color: var(--muted);
+  background: transparent;
+  font-size: 1.15rem;
+  line-height: 1;
+  transition: color 0.16s ease;
+
+  &:hover {
+    color: var(--text);
+  }
+}
+
+.exito {
+  --toast-color: var(--success);
+}
+
+.error {
+  --toast-color: var(--danger);
+}
+
+.info {
+  --toast-color: var(--primary);
+}
+
+.advertencia {
+  --toast-color: var(--warning);
+}
+
+@keyframes toastr-in {
+  from {
+    opacity: 0;
+    transform: translateX(1.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

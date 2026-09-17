@@ -1,0 +1,308 @@
+<section class="pagina">
+  <header class="encabezado">
+    <div>
+      <span class="etiqueta">Gestión bancaria</span>
+      <h1>Solicitudes de préstamo</h1>
+      <p>Registro, aprobación y rechazo de solicitudes.</p>
+    </div>
+  </header>
+
+  <article class="tarjeta">
+    <div class="tarjeta-titulo">
+      <div>
+        <h2>Nueva solicitud</h2>
+        <p>Ingresa los datos solicitados por el cliente.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="formulario" (ngSubmit)="guardar()">
+      <div class="formulario-grid">
+        <label>
+          Cliente
+          <select formControlName="clienteId">
+            <option [ngValue]="0">Selecciona un cliente</option>
+            <option
+              *ngFor="let cliente of clientes"
+              [ngValue]="cliente.id"
+            >
+              {{ cliente.nombre }} {{ cliente.apellido }}
+            </option>
+          </select>
+          <small *ngIf="mensajeError('clienteId') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label>
+          Monto solicitado
+          <input
+            type="number"
+            min="1"
+            step="0.01"
+            formControlName="montoSolicitado"
+          >
+          <small *ngIf="mensajeError('montoSolicitado') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label>
+          Plazo en meses
+          <input
+            type="number"
+            min="1"
+            max="360"
+            formControlName="plazoMeses"
+          >
+          <small *ngIf="mensajeError('plazoMeses') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label>
+          Destino del préstamo
+          <input
+            type="text"
+            formControlName="destinoPrestamo"
+            placeholder="Ejemplo: compra de vehículo"
+          >
+          <small *ngIf="mensajeError('destinoPrestamo') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label class="campo-ancho">
+          Observaciones
+          <textarea
+            rows="3"
+            formControlName="observaciones"
+            placeholder="Información adicional de la solicitud"
+          ></textarea>
+          <small *ngIf="mensajeError('observaciones') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+      </div>
+
+      <div class="acciones-formulario">
+        <button
+          class="boton primario"
+          type="submit"
+          [disabled]="guardando"
+        >
+          {{ guardando ? 'Guardando...' : 'Registrar solicitud' }}
+        </button>
+      </div>
+    </form>
+  </article>
+
+  <article class="tarjeta">
+    <div class="tarjeta-titulo">
+      <div>
+        <h2>Solicitudes registradas</h2>
+        <p>{{ solicitudesFiltradas.length }} solicitud(es).</p>
+      </div>
+
+      <div class="controles-tabla">
+        <label class="filtro-cliente">
+          Filtrar por cliente
+          <select [formControl]="filtroCliente">
+            <option [ngValue]="0">Todos los clientes</option>
+
+            <option
+              *ngFor="let cliente of clientes"
+              [ngValue]="cliente.id"
+            >
+              {{ cliente.nombre }} {{ cliente.apellido }}
+            </option>
+          </select>
+        </label>
+
+        <label class="filtro-cliente">
+          Filtrar por estado
+          <select [formControl]="filtroEstado">
+            <option value="TODOS">Todos los estados</option>
+            <option value="EN_PROCESO">En proceso</option>
+            <option value="APROBADA">Aprobadas</option>
+            <option value="RECHAZADA">Rechazadas</option>
+          </select>
+        </label>
+
+        <button
+          class="boton secundario"
+          type="button"
+          (click)="cargarDatos()"
+        >
+          Actualizar
+        </button>
+      </div>
+    </div>
+
+    <div class="resumen-estados">
+      <span class="resumen en_proceso">
+        {{ totalPorEstado('EN_PROCESO') }} en proceso
+      </span>
+      <span class="resumen aprobada">
+        {{ totalPorEstado('APROBADA') }} aprobadas
+      </span>
+      <span class="resumen rechazada">
+        {{ totalPorEstado('RECHAZADA') }} rechazadas
+      </span>
+    </div>
+
+    <p class="estado-vacio" *ngIf="cargando">
+      Cargando solicitudes...
+    </p>
+
+    <p
+      class="estado-vacio"
+      *ngIf="!cargando && solicitudesFiltradas.length === 0"
+    >
+      No existen solicitudes registradas.
+    </p>
+
+    <div
+      class="tabla-contenedor"
+      *ngIf="!cargando && solicitudesFiltradas.length > 0"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Solicitud</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Resolución</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let solicitud of solicitudesFiltradas">
+            <td>
+              <strong>
+                {{ solicitud.cliente.nombre }}
+                {{ solicitud.cliente.apellido }}
+              </strong>
+              <span>
+                {{ solicitud.cliente.numeroIdentificacion }}
+              </span>
+            </td>
+
+            <td>
+              <strong>{{ solicitud.destinoPrestamo }}</strong>
+              <span>{{ solicitud.plazoMeses }} meses</span>
+            </td>
+
+            <td>
+              {{ solicitud.montoSolicitado | currency:'GTQ':'symbol':'1.2-2' }}
+            </td>
+
+            <td>
+              <span
+                class="estado"
+                [ngClass]="solicitud.estado.toLowerCase()"
+              >
+                {{ solicitud.estado.replace('_', ' ') }}
+              </span>
+            </td>
+
+            <td>
+              {{ solicitud.comentarioResolucion || 'Pendiente de resolución' }}
+            </td>
+
+            <td>
+              <div
+                class="acciones-tabla"
+                *ngIf="solicitud.estado === 'EN_PROCESO'"
+              >
+                <button
+                  class="boton aprobar"
+                  type="button"
+                  (click)="aprobar(solicitud)"
+                >
+                  Aprobar
+                </button>
+
+                <button
+                  class="boton rechazar"
+                  type="button"
+                  (click)="rechazar(solicitud)"
+                >
+                  Rechazar
+                </button>
+              </div>
+
+              <span *ngIf="solicitud.estado !== 'EN_PROCESO'">
+                Resuelta
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <ng-container *ngIf="solicitudAResolver as solicitud">
+    <app-modal
+      [titulo]="estadoResolucion === 'APROBADA' ? 'Aprobar solicitud' : 'Rechazar solicitud'"
+      [subtitulo]="solicitud.cliente.nombre + ' ' + solicitud.cliente.apellido"
+      (cerrar)="cerrarResolucion()"
+    >
+      <form
+        [formGroup]="formularioResolucion"
+        (ngSubmit)="confirmarResolucion()"
+      >
+        <div class="formulario-grid">
+          <label *ngIf="estadoResolucion === 'APROBADA'">
+            Tasa de interés anual (%)
+            <input
+              type="number"
+              min="0"
+              max="999.99"
+              step="0.01"
+              formControlName="tasaInteresAnual"
+            >
+            <small *ngIf="mensajeErrorResolucion('tasaInteresAnual') as textoError">
+              {{ textoError }}
+            </small>
+          </label>
+
+          <label class="campo-ancho">
+            {{
+              estadoResolucion === 'APROBADA'
+                ? 'Comentario de aprobación'
+                : 'Motivo del rechazo'
+            }}
+            <textarea
+              rows="3"
+              formControlName="comentario"
+              placeholder="Escribe el detalle"
+            ></textarea>
+            <small *ngIf="mensajeErrorResolucion('comentario') as textoError">
+              {{ textoError }}
+            </small>
+          </label>
+        </div>
+
+        <div class="acciones-formulario">
+          <button
+            class="boton primario"
+            type="submit"
+            [disabled]="resolviendo"
+          >
+            {{ resolviendo ? 'Procesando...' : 'Confirmar' }}
+          </button>
+
+          <button
+            class="boton secundario"
+            type="button"
+            (click)="cerrarResolucion()"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </app-modal>
+  </ng-container>
+</section>

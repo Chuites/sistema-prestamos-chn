@@ -1,0 +1,214 @@
+<section class="pagina">
+  <header class="encabezado">
+    <div>
+      <span class="etiqueta">Gestión bancaria</span>
+      <h1>Préstamos aprobados</h1>
+      <p>Consulta de saldos y estados de pago.</p>
+    </div>
+
+    <div class="controles-tabla">
+      <label class="filtro-cliente">
+        Filtrar por cliente
+        <select [formControl]="filtroCliente">
+          <option [ngValue]="0">Todos los clientes</option>
+
+          <option
+            *ngFor="let cliente of clientes"
+            [ngValue]="cliente.id"
+          >
+            {{ cliente.nombre }} {{ cliente.apellido }}
+          </option>
+        </select>
+      </label>
+
+      <button
+        class="boton secundario"
+        type="button"
+        (click)="cargarPrestamos()"
+      >
+        Actualizar
+      </button>
+    </div>
+  </header>
+
+  <p class="estado-vacio" *ngIf="cargando">
+    Cargando préstamos...
+  </p>
+
+  <p
+    class="estado-vacio"
+    *ngIf="!cargando && prestamosFiltrados.length === 0"
+  >
+    No existen préstamos aprobados.
+  </p>
+
+  <div
+    class="prestamos-grid"
+    *ngIf="!cargando && prestamosFiltrados.length > 0"
+  >
+    <article
+      class="tarjeta prestamo-tarjeta"
+      *ngFor="let prestamo of prestamosFiltrados"
+    >
+      <div class="prestamo-encabezado">
+        <div>
+          <span class="numero">Préstamo #{{ prestamo.id }}</span>
+          <h2>
+            {{ prestamo.cliente.nombre }}
+            {{ prestamo.cliente.apellido }}
+          </h2>
+          <p>{{ prestamo.solicitud.destinoPrestamo }}</p>
+        </div>
+
+        <span
+          class="estado"
+          [ngClass]="prestamo.estado.toLowerCase()"
+        >
+          {{ prestamo.estado }}
+        </span>
+      </div>
+
+      <div class="montos">
+        <div>
+          <span>Monto aprobado</span>
+          <strong>
+            {{ prestamo.montoAprobado | currency:'GTQ':'symbol':'1.2-2' }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Saldo pendiente</span>
+          <strong class="saldo">
+            {{ prestamo.saldoPendiente | currency:'GTQ':'symbol':'1.2-2' }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="progreso-contenedor">
+        <div class="progreso-texto">
+          <span>Progreso de pago</span>
+          <strong>{{ porcentajePagado(prestamo) }}%</strong>
+        </div>
+
+        <div class="progreso">
+          <div
+            [style.width.%]="porcentajePagado(prestamo)"
+          ></div>
+        </div>
+      </div>
+
+      <dl class="detalles">
+        <div>
+          <dt>Monto pagado</dt>
+          <dd>
+            {{ prestamo.montoPagado | currency:'GTQ':'symbol':'1.2-2' }}
+          </dd>
+        </div>
+
+        <div>
+          <dt>Plazo</dt>
+          <dd>{{ prestamo.plazoMeses }} meses</dd>
+        </div>
+
+        <div>
+          <dt>Tasa anual</dt>
+          <dd>{{ prestamo.tasaInteresAnual }}%</dd>
+        </div>
+
+        <div>
+          <dt>Fecha de aprobación</dt>
+          <dd>{{ prestamo.fechaAprobacion | date:'dd/MM/yyyy' }}</dd>
+        </div>
+      </dl>
+
+      <button
+        class="boton secundario ver-pagos"
+        type="button"
+        (click)="verPagos(prestamo)"
+      >
+        Ver historial de pagos
+      </button>
+    </article>
+  </div>
+
+  <ng-container *ngIf="prestamoSeleccionado as prestamo">
+    <app-modal
+      titulo="Historial de pagos"
+      [subtitulo]="
+        'Préstamo #' + prestamo.id
+        + ' · ' + prestamo.cliente.nombre
+        + ' ' + prestamo.cliente.apellido
+      "
+      (cerrar)="cerrarPagos()"
+    >
+      <div class="resumen-pagos">
+        <div>
+          <span>Pagos registrados</span>
+          <strong>{{ pagosPrestamo.length }}</strong>
+        </div>
+
+        <div>
+          <span>Total pagado</span>
+          <strong>
+            {{ totalPagosPrestamo | currency:'GTQ':'symbol':'1.2-2' }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Saldo pendiente</span>
+          <strong class="saldo">
+            {{ prestamo.saldoPendiente | currency:'GTQ':'symbol':'1.2-2' }}
+          </strong>
+        </div>
+      </div>
+
+      <p class="estado-vacio" *ngIf="cargandoPagos">
+        Cargando pagos...
+      </p>
+
+      <p
+        class="estado-vacio"
+        *ngIf="!cargandoPagos && pagosPrestamo.length === 0"
+      >
+        Este préstamo aún no tiene pagos registrados.
+      </p>
+
+      <div
+        class="tabla-contenedor"
+        *ngIf="!cargandoPagos && pagosPrestamo.length > 0"
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>Recibo</th>
+              <th>Fecha</th>
+              <th>Método</th>
+              <th>Monto</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let pago of pagosPrestamo">
+              <td>
+                <strong>{{ pago.numeroRecibo || 'Sin recibo' }}</strong>
+                <span>{{ pago.observaciones }}</span>
+              </td>
+
+              <td>{{ pago.fechaPago | date:'dd/MM/yyyy HH:mm' }}</td>
+
+              <td>
+                <span class="metodo">{{ pago.metodoPago }}</span>
+              </td>
+
+              <td>
+                <strong class="monto">
+                  {{ pago.monto | currency:'GTQ':'symbol':'1.2-2' }}
+                </strong>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </app-modal>
+  </ng-container>
+</section>

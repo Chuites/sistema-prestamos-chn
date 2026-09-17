@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.resumen-estados {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.15rem;
+}
+
+.resumen {
+  padding: 0.34rem 0.8rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.74rem;
+  font-weight: 700;
+}

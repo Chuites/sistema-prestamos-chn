@@ -1,0 +1,145 @@
+<section class="pagina">
+  <header class="encabezado">
+    <div>
+      <span class="etiqueta">Panel general</span>
+      <h1>Dashboard</h1>
+      <p>Resumen de la actividad del sistema de préstamos.</p>
+    </div>
+
+    <button
+      class="boton secundario"
+      type="button"
+      (click)="cargarDatos()"
+    >
+      Actualizar
+    </button>
+  </header>
+
+  <p class="estado-vacio" *ngIf="cargando">
+    Cargando información...
+  </p>
+
+  <ng-container *ngIf="!cargando">
+    <div class="indicadores">
+      <article class="indicador clientes">
+        <span class="indicador-icono">CL</span>
+        <div>
+          <strong>{{ totalClientes }}</strong>
+          <span>Clientes registrados</span>
+        </div>
+      </article>
+
+      <article class="indicador pendientes">
+        <span class="indicador-icono">SP</span>
+        <div>
+          <strong>{{ solicitudesPendientes }}</strong>
+          <span>Solicitudes pendientes</span>
+        </div>
+      </article>
+
+      <article class="indicador prestamos">
+        <span class="indicador-icono">PR</span>
+        <div>
+          <strong>{{ totalPrestamos }}</strong>
+          <span>Préstamos aprobados</span>
+        </div>
+      </article>
+
+      <article class="indicador pagos">
+        <span class="indicador-icono">PG</span>
+        <div>
+          <strong>{{ totalPagos }}</strong>
+          <span>Pagos registrados</span>
+        </div>
+      </article>
+    </div>
+
+    <div class="montos">
+      <article class="monto-tarjeta">
+        <span>Monto prestado</span>
+        <strong>
+          {{ montoPrestado | currency:'GTQ':'symbol':'1.2-2' }}
+        </strong>
+      </article>
+
+      <article class="monto-tarjeta">
+        <span>Monto pagado</span>
+        <strong class="verde">
+          {{ montoPagado | currency:'GTQ':'symbol':'1.2-2' }}
+        </strong>
+      </article>
+
+      <article class="monto-tarjeta">
+        <span>Saldo pendiente</span>
+        <strong class="azul">
+          {{ saldoPendiente | currency:'GTQ':'symbol':'1.2-2' }}
+        </strong>
+      </article>
+
+      <article class="monto-tarjeta">
+        <span>Solicitudes totales</span>
+        <strong>{{ totalSolicitudes }}</strong>
+      </article>
+    </div>
+
+    <article class="tarjeta">
+      <div class="tarjeta-titulo">
+        <div>
+          <h2>Pagos por cliente</h2>
+          <p>Detalle de la actividad de cada cliente.</p>
+        </div>
+      </div>
+
+      <p
+        class="estado-vacio"
+        *ngIf="resumenPorCliente.length === 0"
+      >
+        No existen clientes registrados.
+      </p>
+
+      <div
+        class="tabla-contenedor"
+        *ngIf="resumenPorCliente.length > 0"
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Identificación</th>
+              <th>Solicitudes</th>
+              <th>Préstamos</th>
+              <th>Pagos</th>
+              <th>Monto pagado</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let resumen of resumenPorCliente">
+              <td>
+                <strong>
+                  {{ resumen.cliente.nombre }}
+                  {{ resumen.cliente.apellido }}
+                </strong>
+                <span>{{ resumen.cliente.correoElectronico }}</span>
+              </td>
+
+              <td>{{ resumen.cliente.numeroIdentificacion }}</td>
+              <td>{{ resumen.solicitudes }}</td>
+              <td>{{ resumen.prestamos }}</td>
+
+              <td>
+                <span class="insignia">{{ resumen.pagos }}</span>
+              </td>
+
+              <td>
+                <strong>
+                  {{ resumen.montoPagado | currency:'GTQ':'symbol':'1.2-2' }}
+                </strong>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </ng-container>
+</section>

@@ -1,0 +1,21 @@
+<div class="toastr-contenedor">
+  <div
+    class="toastr-item"
+    *ngFor="let mensaje of toastr.mensajes()"
+    [ngClass]="mensaje.tipo"
+  >
+    <div class="toastr-contenido">
+      <strong>{{ mensaje.titulo }}</strong>
+      <p>{{ mensaje.texto }}</p>
+    </div>
+
+    <button
+      class="toastr-cerrar"
+      type="button"
+      aria-label="Cerrar notificación"
+      (click)="toastr.cerrar(mensaje.id)"
+    >
+      &times;
+    </button>
+  </div>
+</div>

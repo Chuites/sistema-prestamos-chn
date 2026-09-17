@@ -1,0 +1,248 @@
+<section class="pagina">
+  <header class="encabezado">
+    <div>
+      <span class="etiqueta">Gestión bancaria</span>
+      <h1>Clientes</h1>
+      <p>Registro y administración de clientes del sistema.</p>
+    </div>
+  </header>
+
+  <article class="tarjeta formulario-tarjeta">
+    <div class="tarjeta-titulo">
+      <div>
+        <h2>
+          {{ editandoId === null ? 'Nuevo cliente' : 'Editar cliente' }}
+        </h2>
+        <p>Completa todos los campos obligatorios.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="formulario" (ngSubmit)="guardar()">
+      <div class="formulario-grid">
+        <label>
+          Nombre
+          <input
+            type="text"
+            formControlName="nombre"
+            placeholder="Nombre"
+          >
+          <small *ngIf="mensajeError('nombre') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label>
+          Apellido
+          <input
+            type="text"
+            formControlName="apellido"
+            placeholder="Apellido"
+          >
+          <small *ngIf="mensajeError('apellido') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label>
+          Número de identificación
+          <input
+            type="text"
+            formControlName="numeroIdentificacion"
+            placeholder="DPI o identificación"
+          >
+          <small *ngIf="mensajeError('numeroIdentificacion') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label>
+          Fecha de nacimiento
+          <input
+            type="date"
+            formControlName="fechaNacimiento"
+            [max]="fechaMaxima"
+          >
+          <small *ngIf="mensajeError('fechaNacimiento') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label class="campo-ancho">
+          Dirección
+          <input
+            type="text"
+            formControlName="direccion"
+            placeholder="Dirección del cliente"
+          >
+          <small *ngIf="mensajeError('direccion') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label>
+          Correo electrónico
+          <input
+            type="email"
+            formControlName="correoElectronico"
+            placeholder="correo@ejemplo.com"
+          >
+          <small *ngIf="mensajeError('correoElectronico') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label>
+          Teléfono
+          <input
+            type="text"
+            formControlName="telefono"
+            placeholder="5555-5555"
+          >
+          <small *ngIf="mensajeError('telefono') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+      </div>
+
+      <div class="acciones-formulario">
+        <button
+          class="boton primario"
+          type="submit"
+          [disabled]="guardando"
+        >
+          {{ guardando ? 'Guardando...' : 'Guardar cliente' }}
+        </button>
+
+        <button
+          *ngIf="editandoId !== null"
+          class="boton secundario"
+          type="button"
+          (click)="cancelarEdicion()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </article>
+
+  <article class="tarjeta">
+    <div class="tarjeta-titulo">
+      <div>
+        <h2>Clientes registrados</h2>
+        <p>{{ clientes.length }} registro(s) encontrados.</p>
+      </div>
+
+      <button
+        class="boton secundario"
+        type="button"
+        (click)="cargarClientes()"
+      >
+        Actualizar
+      </button>
+    </div>
+
+    <p class="estado-vacio" *ngIf="cargando">
+      Cargando clientes...
+    </p>
+
+    <p
+      class="estado-vacio"
+      *ngIf="!cargando && clientes.length === 0"
+    >
+      No existen clientes registrados.
+    </p>
+
+    <div
+      class="tabla-contenedor"
+      *ngIf="!cargando && clientes.length > 0"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Identificación</th>
+            <th>Contacto</th>
+            <th>Dirección</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let cliente of clientes">
+            <td>
+              <strong>
+                {{ cliente.nombre }} {{ cliente.apellido }}
+              </strong>
+              <span>{{ cliente.fechaNacimiento }}</span>
+            </td>
+
+            <td>{{ cliente.numeroIdentificacion }}</td>
+
+            <td>
+              <strong>{{ cliente.telefono }}</strong>
+              <span>{{ cliente.correoElectronico }}</span>
+            </td>
+
+            <td>{{ cliente.direccion }}</td>
+
+            <td>
+              <div class="acciones-tabla">
+                <button
+                  class="boton editar"
+                  type="button"
+                  (click)="editar(cliente)"
+                >
+                  Editar
+                </button>
+
+                <button
+                  class="boton eliminar"
+                  type="button"
+                  (click)="eliminar(cliente)"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <ng-container *ngIf="clienteAEliminar as cliente">
+    <app-modal
+      titulo="Eliminar cliente"
+      [subtitulo]="cliente.nombre + ' ' + cliente.apellido"
+      (cerrar)="cancelarEliminacion()"
+    >
+      <div class="alerta error">
+        <p>
+          Se eliminará <strong>TODA</strong> la información del cliente:
+          solicitudes, préstamos y pagos.
+        </p>
+        <p>Esta información no podrá recuperarse.</p>
+        <p>Esta acción no podrá deshacerse.</p>
+      </div>
+
+      <div class="acciones-formulario">
+        <button
+          class="boton eliminar"
+          type="button"
+          [disabled]="eliminando"
+          (click)="confirmarEliminacion()"
+        >
+          {{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}
+        </button>
+
+        <button
+          class="boton secundario"
+          type="button"
+          (click)="cancelarEliminacion()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </app-modal>
+  </ng-container>
+</section>

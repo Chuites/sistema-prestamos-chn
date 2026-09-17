@@ -1,0 +1,116 @@
+:host {
+  display: block;
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 1.25rem;
+}
+
+.indicador {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.4rem;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  color: #ffffff;
+  box-shadow: var(--shadow);
+  transition: transform 0.18s ease;
+
+  &::after {
+    position: absolute;
+    top: -40px;
+    right: -30px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 12%);
+    content: '';
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+
+  strong {
+    display: block;
+    font-size: 2rem;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  span {
+    font-size: 0.82rem;
+    opacity: 0.92;
+  }
+}
+
+.indicador-icono {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  flex: none;
+  border-radius: 15px;
+  place-items: center;
+  background: rgb(255 255 255 / 22%);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.clientes {
+  background: linear-gradient(135deg, #3b6bf0, #1c43b6);
+}
+
+.pendientes {
+  background: linear-gradient(135deg, #f0a53b, #c2740a);
+}
+
+.prestamos {
+  background: linear-gradient(135deg, #17b39a, #0b7d6b);
+}
+
+.pagos {
+  background: linear-gradient(135deg, #6d5cf0, #4338ca);
+}
+
+.montos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 1.25rem;
+}
+
+.monto-tarjeta {
+  padding: 1.3rem 1.4rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
+
+  span {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  strong {
+    color: var(--text);
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .verde {
+    color: var(--success);
+  }
+
+  .azul {
+    color: var(--primary);
+  }
+}

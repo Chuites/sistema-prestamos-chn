@@ -1,0 +1,183 @@
+<section class="pagina">
+  <header class="encabezado">
+    <div>
+      <span class="etiqueta">Gestión bancaria</span>
+      <h1>Pagos en efectivo</h1>
+      <p>Registro de abonos para préstamos aprobados.</p>
+    </div>
+  </header>
+
+  <article class="tarjeta">
+    <div class="tarjeta-titulo">
+      <div>
+        <h2>Registrar pago</h2>
+        <p>El pago se descontará automáticamente del saldo.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="formulario" (ngSubmit)="registrar()">
+      <div class="formulario-grid">
+        <label class="campo-ancho">
+          Préstamo
+          <select formControlName="prestamoId">
+            <option [ngValue]="0">Selecciona un préstamo</option>
+
+            <option
+              *ngFor="let prestamo of prestamos"
+              [ngValue]="prestamo.id"
+              [disabled]="prestamo.estado === 'PAGADO'"
+            >
+              #{{ prestamo.id }} -
+              {{ prestamo.cliente.nombre }}
+              {{ prestamo.cliente.apellido }} -
+              Saldo:
+              {{ prestamo.saldoPendiente | currency:'GTQ':'symbol':'1.2-2' }}
+            </option>
+          </select>
+          <small *ngIf="mensajeError('prestamoId') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label>
+          Monto recibido
+          <input
+            type="number"
+            min="0.01"
+            step="0.01"
+            formControlName="monto"
+          >
+          <small *ngIf="mensajeError('monto') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label>
+          Número de recibo
+          <input
+            type="text"
+            formControlName="numeroRecibo"
+            placeholder="REC-0002"
+          >
+          <small *ngIf="mensajeError('numeroRecibo') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+
+        <label class="campo-ancho">
+          Observaciones
+          <textarea
+            rows="3"
+            formControlName="observaciones"
+            placeholder="Información adicional del pago"
+          ></textarea>
+          <small *ngIf="mensajeError('observaciones') as textoError">
+            {{ textoError }}
+          </small>
+        </label>
+      </div>
+
+      <div class="acciones-formulario">
+        <button
+          class="boton primario"
+          type="submit"
+          [disabled]="guardando"
+        >
+          {{ guardando ? 'Registrando...' : 'Registrar pago' }}
+        </button>
+      </div>
+    </form>
+  </article>
+
+  <article class="tarjeta">
+    <div class="tarjeta-titulo">
+      <div>
+        <h2>Historial de pagos</h2>
+        <p>{{ pagosFiltrados.length }} pago(s) registrado(s).</p>
+      </div>
+
+      <div class="controles-tabla">
+        <label class="filtro-cliente">
+          Filtrar por cliente
+          <select [formControl]="filtroCliente">
+            <option [ngValue]="0">Todos los clientes</option>
+
+            <option
+              *ngFor="let cliente of clientes"
+              [ngValue]="cliente.id"
+            >
+              {{ cliente.nombre }} {{ cliente.apellido }}
+            </option>
+          </select>
+        </label>
+
+        <button
+          class="boton secundario"
+          type="button"
+          (click)="cargarDatos()"
+        >
+          Actualizar
+        </button>
+      </div>
+    </div>
+
+    <p class="estado-vacio" *ngIf="cargando">
+      Cargando pagos...
+    </p>
+
+    <p
+      class="estado-vacio"
+      *ngIf="!cargando && pagos.length === 0"
+    >
+      No existen pagos registrados.
+    </p>
+
+    <div
+      class="tabla-contenedor"
+      *ngIf="!cargando && pagos.length > 0"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>Recibo</th>
+            <th>Cliente</th>
+            <th>Préstamo</th>
+            <th>Fecha</th>
+            <th>Método</th>
+            <th>Monto</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let pago of pagos">
+            <td>
+              <strong>{{ pago.numeroRecibo }}</strong>
+              <span>{{ pago.observaciones }}</span>
+            </td>
+
+            <td>
+              {{ pago.prestamo.cliente.nombre }}
+              {{ pago.prestamo.cliente.apellido }}
+            </td>
+
+            <td>#{{ pago.prestamo.id }}</td>
+
+            <td>
+              {{ pago.fechaPago | date:'dd/MM/yyyy HH:mm' }}
+            </td>
+
+            <td>
+              <span class="metodo">{{ pago.metodoPago }}</span>
+            </td>
+
+            <td>
+              <strong class="monto">
+                {{ pago.monto | currency:'GTQ':'symbol':'1.2-2' }}
+              </strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>

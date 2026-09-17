@@ -1,0 +1,13 @@
+# Secretos y configuración local
+.env
+
+# Dependencias y artefactos de build
+node_modules/
+dist/
+target/
+.angular/
+
+# Logs y sistema
+*.log
+.DS_Store
+Thumbs.db
