@@ -6,6 +6,10 @@ import {
   OnInit
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import {
+  NgOptionComponent,
+  NgSelectComponent
+} from '@ng-select/ng-select';
 import { forkJoin } from 'rxjs';
 
 import { Modal } from '../../components/modal/modal';
@@ -19,7 +23,13 @@ import { ToastrService } from '../../services/toastr.service';
 
 @Component({
   selector: 'app-prestamos',
-  imports: [CommonModule, ReactiveFormsModule, Modal],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    Modal,
+    NgSelectComponent,
+    NgOptionComponent
+  ],
   templateUrl: './prestamos.html',
   styleUrl: './prestamos.scss'
 })
@@ -90,6 +100,8 @@ export class Prestamos implements OnInit {
     this.pagosPrestamo = [];
     this.cargandoPagos = true;
 
+    this.changeDetector.detectChanges();
+
     this.pagoService.listarPorPrestamo(prestamo.id).subscribe({
       next: (respuesta) => {
         this.pagosPrestamo = Array.isArray(respuesta)
@@ -113,6 +125,7 @@ export class Prestamos implements OnInit {
   cerrarPagos(): void {
     this.prestamoSeleccionado = null;
     this.pagosPrestamo = [];
+    this.changeDetector.detectChanges();
   }
 
   get totalPagosPrestamo(): number {

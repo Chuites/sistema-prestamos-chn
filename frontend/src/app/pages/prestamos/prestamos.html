@@ -9,16 +9,20 @@
     <div class="controles-tabla">
       <label class="filtro-cliente">
         Filtrar por cliente
-        <select [formControl]="filtroCliente">
-          <option [ngValue]="0">Todos los clientes</option>
+        <ng-select
+          [formControl]="filtroCliente"
+          [searchable]="true"
+          [clearable]="false"
+        >
+          <ng-option [value]="0">Todos los clientes</ng-option>
 
-          <option
+          <ng-option
             *ngFor="let cliente of clientes"
-            [ngValue]="cliente.id"
+            [value]="cliente.id"
           >
             {{ cliente.nombre }} {{ cliente.apellido }}
-          </option>
-        </select>
+          </ng-option>
+        </ng-select>
       </label>
 
       <button

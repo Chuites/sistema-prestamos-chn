@@ -10,6 +10,10 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
+import {
+  NgOptionComponent,
+  NgSelectComponent
+} from '@ng-select/ng-select';
 import { forkJoin } from 'rxjs';
 
 import { Modal } from '../../components/modal/modal';
@@ -39,7 +43,9 @@ type FiltroEstado = 'TODOS' | EstadoSolicitud;
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    Modal
+    Modal,
+    NgSelectComponent,
+    NgOptionComponent
   ],
   templateUrl: './solicitudes.html',
   styleUrl: './solicitudes.scss'
@@ -200,6 +206,7 @@ export class Solicitudes implements OnInit {
   cerrarResolucion(): void {
     this.solicitudAResolver = null;
     this.estadoResolucion = null;
+    this.changeDetector.detectChanges();
   }
 
   confirmarResolucion(): void {
@@ -329,5 +336,7 @@ export class Solicitudes implements OnInit {
       comentario: '',
       tasaInteresAnual: 12.5
     });
+
+    this.changeDetector.detectChanges();
   }
 }

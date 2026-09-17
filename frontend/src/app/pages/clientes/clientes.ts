@@ -207,10 +207,12 @@ export class Clientes implements OnInit {
     }
 
     this.clienteAEliminar = cliente;
+    this.changeDetector.detectChanges();
   }
 
   cancelarEliminacion(): void {
     this.clienteAEliminar = null;
+    this.changeDetector.detectChanges();
   }
 
   confirmarEliminacion(): void {

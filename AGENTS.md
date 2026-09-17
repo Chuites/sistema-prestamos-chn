@@ -42,8 +42,15 @@ Frontend (run from `frontend`):
 
 - `docker compose up --build` from the repo root starts `sqlserver` + `backend` + `frontend` (web on `http://localhost:4200`, API on `:8080`).
 - Requires a root `.env` with `DB_PASSWORD` (copy `.env.example`). SQL Server is health-checked before the backend starts.
+- The `sqlserver` service creates `prestamos_db` on first boot via the image's native `MSSQL_DB` env var (only when the named volume is empty; idempotent afterwards). Its healthcheck waits for `DB_ID('prestamos_db')` to exist, so `backend` (`depends_on: service_healthy`) never starts before the database exists. Tables are created by Hibernate `ddl-auto=update`; there are no migrations.
 - Multi-stage Dockerfiles: `backend/prestamos-api/Dockerfile` (Maven → JRE) and `frontend/Dockerfile` (node → nginx, serves `dist/frontend/browser`).
 - `docker compose down -v` deletes the database volume.
+
+## Demo seed data
+
+- `config/DataSeeder` (an `ApplicationRunner`) populates demo data when `app.seed.enabled=true`. It is `false` by default in `application.properties` and enabled via `APP_SEED_ENABLED: "true"` in `docker-compose.yml` (backend), so tests and prod are unaffected.
+- Idempotent: skips if `clientes` already has rows (`docker compose restart backend` does not duplicate). Creates 12 clientes, 24 solicitudes (6 `EN_PROCESO`, 12 `APROBADA`, 6 `RECHAZADA`), 12 prestamos (5 `PENDIENTE`, 5 `PARCIAL`, 2 `PAGADO`) and 10 pagos, driving the real services so balances/states stay consistent.
+- To reset: `docker compose down -v && docker compose up -d --build`.
 
 ## Conventions
 

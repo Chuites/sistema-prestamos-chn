@@ -19,15 +19,19 @@
       <div class="formulario-grid">
         <label>
           Cliente
-          <select formControlName="clienteId">
-            <option [ngValue]="0">Selecciona un cliente</option>
-            <option
+          <ng-select
+            formControlName="clienteId"
+            placeholder="Selecciona un cliente"
+            [searchable]="true"
+            [clearable]="false"
+          >
+            <ng-option
               *ngFor="let cliente of clientes"
-              [ngValue]="cliente.id"
+              [value]="cliente.id"
             >
               {{ cliente.nombre }} {{ cliente.apellido }}
-            </option>
-          </select>
+            </ng-option>
+          </ng-select>
           <small *ngIf="mensajeError('clienteId') as textoError">
             {{ textoError }}
           </small>
@@ -106,26 +110,34 @@
       <div class="controles-tabla">
         <label class="filtro-cliente">
           Filtrar por cliente
-          <select [formControl]="filtroCliente">
-            <option [ngValue]="0">Todos los clientes</option>
+          <ng-select
+            [formControl]="filtroCliente"
+            [searchable]="true"
+            [clearable]="false"
+          >
+            <ng-option [value]="0">Todos los clientes</ng-option>
 
-            <option
+            <ng-option
               *ngFor="let cliente of clientes"
-              [ngValue]="cliente.id"
+              [value]="cliente.id"
             >
               {{ cliente.nombre }} {{ cliente.apellido }}
-            </option>
-          </select>
+            </ng-option>
+          </ng-select>
         </label>
 
         <label class="filtro-cliente">
           Filtrar por estado
-          <select [formControl]="filtroEstado">
-            <option value="TODOS">Todos los estados</option>
-            <option value="EN_PROCESO">En proceso</option>
-            <option value="APROBADA">Aprobadas</option>
-            <option value="RECHAZADA">Rechazadas</option>
-          </select>
+          <ng-select
+            [formControl]="filtroEstado"
+            [searchable]="true"
+            [clearable]="false"
+          >
+            <ng-option value="TODOS">Todos los estados</ng-option>
+            <ng-option value="EN_PROCESO">En proceso</ng-option>
+            <ng-option value="APROBADA">Aprobadas</ng-option>
+            <ng-option value="RECHAZADA">Rechazadas</ng-option>
+          </ng-select>
         </label>
 
         <button

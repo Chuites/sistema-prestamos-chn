@@ -10,6 +10,10 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
+import {
+  NgOptionComponent,
+  NgSelectComponent
+} from '@ng-select/ng-select';
 import { forkJoin } from 'rxjs';
 
 import { Cliente } from '../../models/cliente';
@@ -32,7 +36,9 @@ const MENSAJES_PATRON: Record<string, string> = {
   selector: 'app-pagos',
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgSelectComponent,
+    NgOptionComponent
   ],
   templateUrl: './pagos.html',
   styleUrl: './pagos.scss'

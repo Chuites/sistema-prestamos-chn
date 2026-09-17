@@ -19,12 +19,15 @@
       <div class="formulario-grid">
         <label class="campo-ancho">
           Préstamo
-          <select formControlName="prestamoId">
-            <option [ngValue]="0">Selecciona un préstamo</option>
-
-            <option
+          <ng-select
+            formControlName="prestamoId"
+            placeholder="Selecciona un préstamo"
+            [searchable]="true"
+            [clearable]="false"
+          >
+            <ng-option
               *ngFor="let prestamo of prestamos"
-              [ngValue]="prestamo.id"
+              [value]="prestamo.id"
               [disabled]="prestamo.estado === 'PAGADO'"
             >
               #{{ prestamo.id }} -
@@ -32,8 +35,8 @@
               {{ prestamo.cliente.apellido }} -
               Saldo:
               {{ prestamo.saldoPendiente | currency:'GTQ':'symbol':'1.2-2' }}
-            </option>
-          </select>
+            </ng-option>
+          </ng-select>
           <small *ngIf="mensajeError('prestamoId') as textoError">
             {{ textoError }}
           </small>
@@ -99,16 +102,20 @@
       <div class="controles-tabla">
         <label class="filtro-cliente">
           Filtrar por cliente
-          <select [formControl]="filtroCliente">
-            <option [ngValue]="0">Todos los clientes</option>
+          <ng-select
+            [formControl]="filtroCliente"
+            [searchable]="true"
+            [clearable]="false"
+          >
+            <ng-option [value]="0">Todos los clientes</ng-option>
 
-            <option
+            <ng-option
               *ngFor="let cliente of clientes"
-              [ngValue]="cliente.id"
+              [value]="cliente.id"
             >
               {{ cliente.nombre }} {{ cliente.apellido }}
-            </option>
-          </select>
+            </ng-option>
+          </ng-select>
         </label>
 
         <button

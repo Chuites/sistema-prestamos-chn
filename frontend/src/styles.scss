@@ -119,12 +119,10 @@ textarea {
 @keyframes page-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -340,7 +338,8 @@ textarea:focus {
   font-weight: 700;
 }
 
-.filtro-cliente select {
+.filtro-cliente select,
+.filtro-cliente .ng-select {
   min-width: 210px;
 }
 
@@ -528,7 +527,122 @@ table {
     align-items: stretch;
   }
 
-  .filtro-cliente select {
+  .filtro-cliente select,
+  .filtro-cliente .ng-select {
     min-width: 0;
   }
+}
+
+/* ng-select ---------------------------------------------------------------- */
+.ng-select {
+  display: block;
+  width: 100%;
+  font-size: 0.88rem;
+}
+
+.ng-select .ng-select-container {
+  min-height: 46px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  box-shadow: none;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.ng-select.ng-select-focused > .ng-select-container {
+  border-color: var(--primary);
+  background: var(--surface);
+  box-shadow: var(--ring);
+}
+
+.ng-select.ng-select-opened > .ng-select-container {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+.ng-select .ng-select-container .ng-value-container {
+  padding-left: 0.9rem;
+}
+
+.ng-select .ng-select-container .ng-value-container .ng-placeholder {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.ng-select.ng-select-single
+  .ng-select-container
+  .ng-value-container
+  .ng-value {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.ng-select .ng-select-container .ng-value-container .ng-input > input {
+  color: var(--text);
+}
+
+.ng-select .ng-arrow-wrapper .ng-arrow {
+  border-color: var(--muted) transparent transparent;
+}
+
+.ng-select.ng-select-focused .ng-arrow-wrapper .ng-arrow,
+.ng-select.ng-select-opened .ng-arrow-wrapper .ng-arrow {
+  border-top-color: var(--primary);
+}
+
+.ng-select .ng-clear-wrapper {
+  color: var(--muted);
+}
+
+.ng-select .ng-clear-wrapper:hover {
+  color: var(--danger);
+}
+
+/* Panel del dropdown (se renderiza en el overlay del CDK) ------------------ */
+.ng-dropdown-panel {
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+  padding: 0.65rem 0.9rem;
+  color: var(--text-soft);
+  background: var(--surface);
+  font-size: 0.86rem;
+}
+
+.ng-dropdown-panel
+  .ng-dropdown-panel-items
+  .ng-option.ng-option-marked {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.ng-dropdown-panel
+  .ng-dropdown-panel-items
+  .ng-option.ng-option-selected {
+  color: var(--primary);
+  background: var(--primary-soft);
+  font-weight: 700;
+}
+
+.ng-dropdown-panel
+  .ng-dropdown-panel-items
+  .ng-option.ng-option-disabled {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-optgroup {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
