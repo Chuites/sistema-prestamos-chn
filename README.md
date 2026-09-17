@@ -46,6 +46,15 @@ Eso es todo.
 En el primer arranque se cargan solos: **12 clientes**, **24 solicitudes**,
 **12 préstamos** y **10 pagos**, para que puedas probar la aplicación de inmediato.
 
+## Documentación
+
+- [Arquitectura](docs/arquitectura.md) — cómo está construido el sistema.
+- [API REST](docs/api.md) — endpoints y ejemplos.
+- [Base de datos](docs/base-de-datos.md) — diagrama entidad-relación y script SQL.
+- [Guía de usuario](docs/guia-usuario.md) — uso de la aplicación.
+
+Swagger UI (con el backend corriendo): http://localhost:8080/swagger-ui.html
+
 ## Comandos útiles
 
 | Acción                              | Comando                                        |
