@@ -93,10 +93,11 @@ Registra los abonos a los préstamos.
    **Observaciones**.
 3. Pulsa **Registrar pago**.
 
-**Historial**: la parte inferior lista los pagos y permite filtrar por cliente.
+**Historial**: la parte inferior lista los pagos. Al elegir un cliente en *Filtrar por
+cliente*, la tabla muestra solo sus pagos.
 
 > El monto no puede superar el saldo pendiente. Al registrar el pago, el sistema
-> actualiza el saldo y el estado del préstamo automáticamente.
+> recalcula el saldo y el estado del préstamo automáticamente.
 
 ## Recorrido completo de ejemplo
 

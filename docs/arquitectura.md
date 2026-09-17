@@ -75,16 +75,19 @@ Cliente HTTP → Controller → Service → Repository → Base de datos
 | Recurso no encontrado | `404` | `{ "mensaje": "..." }` |
 | Conflicto (regla de negocio o BD) | `409` | `{ "mensaje": "..." }` |
 
-Los errores de negocio se lanzan como `ResponseStatusException`; no hay excepciones
-personalizadas.
+Los errores de negocio se lanzan como `ResponseStatusException` (sin excepciones
+personalizadas) y `GlobalExceptionHandler` los convierte al formato
+`{ "mensaje": "..." }`.
 
 ### Modelo de dominio
 
-Cuatro entidades y sus estados:
+Cuatro entidades (todas extienden `BaseEntity`, que aporta `creado_en`/`actualizado_en`):
 
 - **Cliente** — datos personales.
 - **SolicitudPrestamo** — petición de crédito. Estado: `EN_PROCESO`, `APROBADA`, `RECHAZADA`.
 - **Prestamo** — crédito aprobado. Estado: `PENDIENTE`, `PARCIAL`, `PAGADO`.
+  `cliente`, `saldoPendiente` y `estado` son **derivados** (no se almacenan): el cliente
+  se obtiene vía `solicitud` y el saldo/estado a partir de `montoAprobado`/`montoPagado`.
 - **Pago** — abono a un préstamo.
 
 ### Flujo de negocio
@@ -104,10 +107,21 @@ Reglas clave:
 
 - Una solicitud **solo se puede resolver una vez**.
 - Al **aprobar** se exige `tasaInteresAnual` y se crea el préstamo con
-  `saldoPendiente = montoAprobado` y estado `PENDIENTE`.
+  `montoPagado = 0`. El saldo y el estado se derivan (al inicio, `PENDIENTE`).
 - Al **rechazar** no se crea préstamo.
-- Un pago **no puede superar** el saldo pendiente; al registrarlo se actualizan
-  `montoPagado` y `saldoPendiente`, y el estado pasa a `PARCIAL` o `PAGADO`.
+- Un pago **no puede superar** el saldo pendiente; al registrarlo se incrementa
+  `montoPagado` y, a partir de él, el saldo y el estado pasan a `PARCIAL` o `PAGADO`.
+  Un `numeroRecibo` repetido devuelve `409`.
+
+### Base de datos
+
+- El esquema lo genera Hibernate (`ddl-auto=update`); ver [base-de-datos.md](base-de-datos.md).
+- Modelo normalizado (1FN–3FN/BCNF): `prestamos` no guarda `cliente_id`,
+  `saldo_pendiente` ni `estado` (se derivan). La única denormalización intencional es
+  `prestamos.monto_pagado` (caché del total pagado).
+- Integridad: claves foráneas, restricciones `CHECK` para los estados y el método de pago,
+  e índice único filtrado para `pagos.numero_recibo`.
+- Auditoría: las 4 tablas tienen `creado_en` y `actualizado_en` (`BaseEntity`).
 
 ## Frontend
 
@@ -124,6 +138,8 @@ Aplicación Angular con componentes **standalone** y rutas en `app.routes.ts`:
 - Cada pantalla tiene su `.ts`, `.html` y `.scss`.
 - Los formularios usan **Reactive Forms** (`FormBuilder`, `inject()`).
 - Los selects con búsqueda usan **`@ng-select/ng-select`**.
+- Las tablas se renderizan con getters filtrados (`pagosFiltrados`, `solicitudesFiltradas`,
+  `prestamosFiltrados`).
 - Los servicios (`services/`) hacen las llamadas HTTP con `HttpClient`.
 - La URL base es relativa (`/api`): en desarrollo el `proxy.conf.json` la reenvía al
   backend, y en Docker lo hace nginx.

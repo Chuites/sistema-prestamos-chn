@@ -36,13 +36,16 @@ Recursos disponibles:
 { "mensaje": "Cliente no encontrado" }
 ```
 
+Los errores de negocio se lanzan como `ResponseStatusException` y el manejador global
+(`GlobalExceptionHandler`) los devuelve con este formato.
+
 | Código | Cuándo ocurre |
 |:------:|---------------|
 | `200` | Consulta o actualización correcta. |
 | `201` | Recurso creado. |
 | `400` | Datos o parámetros inválidos, o el pago supera el saldo. |
 | `404` | El recurso no existe. |
-| `409` | Conflicto: identificación duplicada, solicitud ya resuelta, préstamo ya pagado. |
+| `409` | Conflicto: identificación duplicada, solicitud ya resuelta, préstamo ya pagado o `numeroRecibo` repetido. |
 
 ---
 
@@ -244,7 +247,8 @@ curl -X PUT http://localhost:8080/api/solicitudes/5/resolver \
 
 ## Préstamos
 
-Estados posibles: `PENDIENTE`, `PARCIAL`, `PAGADO`.
+Estados posibles: `PENDIENTE`, `PARCIAL`, `PAGADO`. `saldoPendiente` y `estado` son
+**derivados** (`montoAprobado - montoPagado`); no se almacenan.
 
 ### `GET /api/prestamos`
 
