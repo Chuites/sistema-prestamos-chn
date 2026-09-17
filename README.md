@@ -1,104 +1,86 @@
-# Sistema de Préstamos — Crédito Nacional
+# Sistema de Préstamos
 
-Sistema web para la gestión de préstamos bancarios: clientes, solicitudes, préstamos
-aprobados y pagos en efectivo.
+Aplicación web para administrar clientes, solicitudes, préstamos y pagos.
 
-- **Backend**: Spring Boot 4 · Java 21 · Spring Data JPA · SQL Server.
-- **Frontend**: Angular 22 (standalone) · SCSS.
-- **Base de datos**: SQL Server 2022.
-- **Despliegue**: Docker Compose (un solo comando).
+- **Backend:** Spring Boot 4 (Java 21) + SQL Server 2022.
+- **Frontend:** Angular 22.
+- **Todo se levanta con Docker Compose.**
 
-## Estructura
+## Cómo levantarlo
 
-```
-sistema-prestamos-chn/
-├─ backend/prestamos-api/   # API REST (Spring Boot)
-├─ frontend/                # Aplicación Angular
-├─ docker-compose.yml       # Orquestación (base de datos + API + web)
-├─ .env.example             # Plantilla de variables de entorno
-└─ README.md
-```
-
-## Requisitos
-
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) con Docker Compose.
-- Opcional (desarrollo sin Docker): Java 21, Node.js 22 y npm.
-
-## Inicio rápido con Docker Compose
-
-1. Crea el archivo de entorno a partir de la plantilla y define la contraseña de SQL Server:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-   En Windows (PowerShell):
-
-   ```powershell
-   Copy-Item .env.example .env
-   ```
-
-2. Levanta todo el sistema:
-
-   ```bash
-   docker compose up --build
-   ```
-
-   La primera vez tarda unos minutos (descarga de imágenes y compilación). Espera a que
-   SQL Server termine de arrancar; el backend espera a que la base de datos esté sana.
-
-3. Abre la aplicación:
-
-   | Servicio            | URL                              |
-   |---------------------|----------------------------------|
-   | Aplicación web      | http://localhost:4200            |
-   | API (a través del proxy) | http://localhost:4200/api     |
-   | API (directo)       | http://localhost:8080/api        |
-   | SQL Server          | `localhost:1433` (`sa`)          |
-
-Para detener los contenedores:
+**1. Crea el archivo de configuración** (solo la primera vez):
 
 ```bash
-docker compose down
+cp .env.example .env
 ```
 
-Para detenerlos y **borrar los datos** de la base de datos:
+En Windows (PowerShell):
+
+```powershell
+Copy-Item .env.example .env
+```
+
+**2. Arranca el sistema:**
 
 ```bash
-docker compose down -v
+docker compose up --build
 ```
 
-## Desarrollo local (sin Docker)
+La primera vez tarda unos minutos. La base de datos y los datos de prueba se crean
+automáticamente.
 
-### 1. Base de datos
+**3. Abre la aplicación:** http://localhost:4200
 
-Desde la raíz del repositorio:
+Eso es todo.
+
+## Direcciones
+
+| Qué         | Dónde                                        |
+|-------------|----------------------------------------------|
+| Aplicación  | http://localhost:4200                        |
+| API         | http://localhost:8080/api                    |
+| SQL Server  | `localhost:1433` (usuario `sa`)              |
+
+## Datos de prueba
+
+En el primer arranque se cargan solos: **12 clientes**, **24 solicitudes**,
+**12 préstamos** y **10 pagos**, para que puedas probar la aplicación de inmediato.
+
+## Comandos útiles
+
+| Acción                              | Comando                                        |
+|-------------------------------------|------------------------------------------------|
+| Detener                             | `docker compose down`                          |
+| Detener y borrar la base de datos   | `docker compose down -v`                       |
+| Empezar de cero                     | `docker compose down -v && docker compose up --build` |
+
+## Desarrollo sin Docker (opcional)
+
+Necesitas Java 21 y Node.js 22.
+
+**1. Base de datos:**
 
 ```bash
 docker compose up -d sqlserver
 ```
 
-### 2. Backend
-
-El backend lee `DB_PASSWORD` del entorno y **no** carga el `.env` automáticamente.
-
-Windows (PowerShell):
+**2. Backend** (la API queda en http://localhost:8080):
 
 ```powershell
+# Windows (PowerShell)
+cd backend/prestamos-api
 $env:DB_PASSWORD = "TuClaveSegura2026*"
 .\mvnw.cmd spring-boot:run
 ```
 
-Linux/macOS:
-
 ```bash
+# Linux / macOS
+cd backend/prestamos-api
 export DB_PASSWORD="TuClaveSegura2026*"
 ./mvnw spring-boot:run
 ```
 
-La API queda en `http://localhost:8080`.
-
-### 3. Frontend
+**3. Frontend** (queda en http://localhost:4200):
 
 ```bash
 cd frontend
@@ -106,36 +88,16 @@ npm install
 npm start
 ```
 
-`ng serve` usa `proxy.conf.json` y reenvía `/api` a `http://localhost:8080`, por lo que
-la aplicación queda disponible en `http://localhost:4200`.
-
 ## Pruebas
 
-Frontend (Vitest):
+- **Frontend:** `cd frontend && npm test`
+- **Backend:** `cd backend/prestamos-api && .\mvnw.cmd '-Dtest=ClienteServiceTest,SolicitudPrestamoServiceTest,PagoServiceTest' test`
 
-```bash
-cd frontend
-npm test
-```
+## Problemas comunes
 
-Backend: pruebas unitarias de servicios (Mockito, no requieren base de datos):
-
-```powershell
-cd backend/prestamos-api
-.\mvnw.cmd '-Dtest=ClienteServiceTest,SolicitudPrestamoServiceTest,PagoServiceTest' test
-```
-
-El comando `.\mvnw.cmd test` completo levanta el contexto de Spring, por lo que requiere
-SQL Server accesible y `DB_PASSWORD` definida.
-
-## Notas y solución de problemas
-
-- **Contraseña de SQL Server**: debe cumplir la política de complejidad (mínimo 8
-  caracteres, con mayúsculas, minúsculas, dígitos y un símbolo) o el contenedor de SQL
-  Server no arrancará.
-- **Puertos ocupados**: si `4200`, `8080` o `1433` están en uso, detén el proceso que los
-  ocupa o ajusta los mapeos en `docker-compose.yml`.
-- **La API tarda en responder la primera vez**: SQL Server tarda en inicializar; el
-  backend no arranca hasta que la base de datos está sana.
-- **Esquema de la base de datos**: se crea/actualiza automáticamente
-  (`spring.jpa.hibernate.ddl-auto=update`); no hay migraciones.
+- **Contraseña de SQL Server:** debe tener al menos 8 caracteres, con mayúscula,
+  minúscula, número y símbolo, o el contenedor no arranca.
+- **Puertos ocupados:** si `4200`, `8080` o `1433` están en uso, libera el puerto.
+- **La API tarda la primera vez:** SQL Server debe terminar de iniciar antes de que
+  arranque el backend.
+- **Tablas:** se crean y actualizan solas, no hay migraciones que ejecutar.
