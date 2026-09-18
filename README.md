@@ -29,6 +29,10 @@ docker compose up --build
 La primera vez tarda unos minutos. La base de datos y los datos de prueba se crean
 automáticamente.
 
+> Si ya habías arrancado el sistema antes con otra contraseña, este comando reutiliza
+> la base de datos existente y la clave nueva no se aplica. Para empezar de cero usa
+> `docker compose down -v && docker compose up --build`.
+
 **3. Abre la aplicación:** http://localhost:4200
 
 Eso es todo.
@@ -108,6 +112,16 @@ npm start
 
 - **Contraseña de SQL Server:** debe tener al menos 8 caracteres, con mayúscula,
   minúscula, número y símbolo, o el contenedor no arranca.
+- **Cambié `DB_PASSWORD` y `sqlserver` queda `unhealthy`** (o el backend no arranca con
+  `dependency sqlserver failed to start`): la contraseña de `sa` se graba al crear la
+  base de datos y en arranques posteriores `MSSQL_SA_PASSWORD` se ignora. Si el volumen
+  ya existía con otra clave, el healthcheck no puede autenticarse (error
+  `18456, State 8`). Solución: `docker compose down -v && docker compose up --build`
+  (borra la base de datos y vuelve a cargar los datos de prueba).
+- **No se descarga la imagen `mcr.microsoft.com/mssql/server`:** a veces es un bloqueo
+  de red (firewall, VPN o proxy corporativo). Prueba con otra red o desactiva la VPN y
+  vuelve a intentar; puedes comprobarlo con
+  `docker pull mcr.microsoft.com/mssql/server:2022-latest`.
 - **Puertos ocupados:** si `4200`, `8080` o `1433` están en uso, libera el puerto.
 - **`localhost:8080` responde una página vacía:** otro proceso puede estar usando el
   `8080` en IPv4 (por ejemplo, el agente Check Point SandBlast). Usa

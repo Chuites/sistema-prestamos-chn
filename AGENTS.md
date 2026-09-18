@@ -28,6 +28,7 @@ Frontend (run from `frontend`):
 - Start the database from the repo root: `docker compose up -d` (SQL Server 2022 on `localhost:1433`). Password comes from root `.env` (`DB_PASSWORD`).
 - Backend reads `DB_PASSWORD` from the environment; `application.properties` has **no default**. The root `.env` is **not** auto-loaded by Maven/Spring, so export it (or set `DB_PASSWORD` in the shell) before `mvnw` commands.
 - Defaults in `application.properties`: user `sa`, database `prestamos_db`, `spring.jpa.hibernate.ddl-auto=update` (schema auto-created — there are no migrations).
+- **Changing `DB_PASSWORD` in `.env` does not change the `sa` password of an existing volume.** `MSSQL_SA_PASSWORD` is applied only when SQL Server initializes an empty data directory; on subsequent boots it is ignored. If the persisted volume was created with a different password, the container starts but its healthcheck login fails (`Error 18456, State 8: Password did not match`) and the backend never starts (`dependency sqlserver failed to start`). Fix in dev by recreating the volume: `docker compose down -v && docker compose up -d --build` (loses local data; the demo seed repopulates it).
 
 ## Architecture / API
 
